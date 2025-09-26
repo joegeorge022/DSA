@@ -91,3 +91,8 @@ int main() {
         else printf("Invalid choice!\n");
     }
 }
+        else if (choice == 4) showMatrix(B, cB, sizeB, 'B');
+        else if (choice == 5) { printf("Exiting...\n"); return 0; }
+        else printf("Invalid choice!\n");
+    }
+}

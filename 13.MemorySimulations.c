@@ -1,15 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 struct Block {
     int size;
     int isFree;
     int pid;
     struct Block *prev, *next;
 };
-
 struct Block *head = NULL;
-
 struct Block* createBlock(int size) {
     struct Block *newBlock = (struct Block*)malloc(sizeof(struct Block));
     newBlock->size = size;
@@ -18,7 +15,6 @@ struct Block* createBlock(int size) {
     newBlock->prev = newBlock->next = NULL;
     return newBlock;
 }
-
 void insertBlock(int size) {
     struct Block *newBlock = createBlock(size);
     if(head == NULL) {
@@ -30,7 +26,6 @@ void insertBlock(int size) {
     temp->next = newBlock;
     newBlock->prev = temp;
 }
-
 void displayMemory() {
     struct Block *temp = head;
     printf("\nMemory Blocks:\n");
@@ -43,7 +38,6 @@ void displayMemory() {
     }
     printf("NULL\n");
 }
-
 void garbageCollector() {
     struct Block *temp = head;
     while(temp != NULL && temp->next != NULL) {
@@ -59,10 +53,8 @@ void garbageCollector() {
         }
     }
 }
-
 void allocate(int pid, int size, int choice) {
     struct Block *temp = head, *selected = NULL;
-
     if(choice == 1) {
         while(temp != NULL) {
             if(temp->isFree && temp->size >= size) {
@@ -90,12 +82,11 @@ void allocate(int pid, int size, int choice) {
             temp = temp->next;
         }
     }
-
     if(selected == NULL) {
         printf("Process %d of size %d cannot be allocated\n", pid, size);
+        displayMemory();
         return;
     }
-
     if(selected->size > size) {
         struct Block *newBlock = createBlock(selected->size - size);
         newBlock->next = selected->next;
@@ -104,13 +95,11 @@ void allocate(int pid, int size, int choice) {
         selected->next = newBlock;
         selected->size = size;
     }
-
     selected->isFree = 0;
     selected->pid = pid;
-
     printf("Process %d allocated %d units\n", pid, size);
+    displayMemory();
 }
-
 void freeProcess(int pid) {
     struct Block *temp = head;
     int found = 0;
@@ -126,8 +115,8 @@ void freeProcess(int pid) {
     }
     if(!found) printf("Process %d not found\n", pid);
     garbageCollector();
+    displayMemory();
 }
-
 int main() {
     int n, choice, size, pid = 1;
     printf("Enter number of memory blocks: ");
@@ -137,34 +126,28 @@ int main() {
         scanf("%d", &size);
         insertBlock(size);
     }
-
     while(1) {
         printf("\nMenu:\n");
-        printf("1. Display Memory\n");
-        printf("2. Allocate Process\n");
-        printf("3. Free Process\n");
-        printf("4. Exit\n");
+        printf("1. Allocate Process\n");
+        printf("2. Free Process\n");
+        printf("3. Exit\n");
         printf("Enter choice: ");
         scanf("%d", &choice);
-
         if(choice == 1) {
-            displayMemory();
-        } 
-        else if(choice == 2) {
             printf("Enter process size: ");
             scanf("%d", &size);
             printf("Choose allocation method: 1.First Fit 2.Best Fit 3.Worst Fit : ");
             scanf("%d", &choice);
             allocate(pid++, size, choice);
-        } 
-        else if(choice == 3) {
+        }
+        else if(choice == 2) {
             printf("Enter process ID to free: ");
             scanf("%d", &size);
             freeProcess(size);
-        } 
-        else if(choice == 4) {
+        }
+        else if(choice == 3) {
             break;
-        } 
+        }
         else {
             printf("Invalid choice\n");
         }
